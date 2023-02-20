@@ -1,47 +1,30 @@
-use std::{collections::{HashMap}, fmt::{Display}, str::FromStr};
+use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 pub struct Actions {
-    registered: HashMap<u128, fn()>,
-    id: u128,
+    registered: HashMap<u128, Box<dyn Fn()>>,
+    next_id: u128,
 }
 
 impl Actions {
     pub fn new() -> Self {
         Actions {
             registered: HashMap::new(),
-            id: 0,
+            next_id: 0,
         }
     }
 
-    pub fn add_action(&mut self, f: fn()) -> u128 {
-        self.registered.insert(self.id, f);
-        self.id += 1;
-        self.id - 1
+    pub fn add_action(&mut self, f: Box<dyn Fn()>) -> u128 {
+        self.registered.insert(self.next_id, f);
+        self.next_id += 1;
+        self.next_id - 1
     }
 
     pub fn invoke_actions(&self) {
         self.registered.values().for_each(|action| action());
     }
 
-    pub fn remove_action(&mut self, key: &u128) -> Option<fn()> {
+    pub fn remove_action(&mut self, key: &u128) -> Option<Box<dyn Fn()>> {
         self.registered.remove(key)
-    }
-
-    pub fn remove_all_actions(&mut self, f: fn()) -> usize {
-        let mut count = self.registered.len();
-        let mut next_register = HashMap::new();
-        
-        for entry in &self.registered {
-            if *entry.1 == f {
-                continue
-            }
-
-            next_register.insert(*entry.0, *entry.1);
-        }
-
-        self.registered = next_register;
-        
-        count - self.registered.len()
     }
 }
 
