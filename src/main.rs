@@ -13,4 +13,6 @@ fn main() {
     println!();
     let hello_world_fn = actions.remove_action(&hello_world_fn_key).unwrap();
     actions.invoke_actions();
+
+    println!("{}", actions);
 }

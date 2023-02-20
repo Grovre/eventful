@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display, str::FromStr};
 
 pub struct Actions {
     registered: HashMap<u128, fn()>,
@@ -25,5 +25,17 @@ impl Actions {
 
     pub fn remove_action(&mut self, key: &u128) -> Option<fn()> {
         self.registered.remove(key)
+    }
+}
+
+impl Display for Actions {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut str = String::from_str("Action Keys:").unwrap();
+        for entry in &self.registered {
+            let map_str = format!("\n{} -> {:p}", entry.0, entry.1);
+            str.push_str(map_str.as_str());
+        }
+
+        write!(f, "{}", str)
     }
 }
